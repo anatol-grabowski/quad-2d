@@ -1,26 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useRef, useEffect, useLayoutEffect } from 'react'
+import './App.css'
+import { sim } from './quad'
 
 function App() {
+  const ref = useRef()
+  useLayoutEffect(() => {
+    sim.init(ref.current!)
+  }, [])
+  useEffect(() => {
+    return () => sim.deinit()
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <canvas
+      width="600"
+      height="600"
+      style={{ border: '1px dashed black' }}
+      tabIndex={0}
+      ref={ref}
+    ></canvas>
+  )
 }
 
-export default App;
+export default App
