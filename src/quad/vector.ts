@@ -10,6 +10,10 @@ export class Vector {
     return '[' + this.x + ', ' + this.y + ']'
   }
 
+  toArray() {
+    return [this.x, this.y]
+  }
+
   //======================================== result isn't a vector
   lengthSq(v) {
     if (!v) return this.x * this.x + this.y * this.y
@@ -159,3 +163,13 @@ export class Vector {
     return this.clone().iperp(vStart, vEnd)
   }
 }
+
+function vec(arr: [x: number, y: number]): Vector
+function vec(x: number, y: number): Vector
+function vec(x: number | [x: number, y: number], y?: number) {
+  if (Array.isArray(x)) {
+    return new Vector(...x)
+  }
+  return new Vector(x, y)
+}
+export { vec }

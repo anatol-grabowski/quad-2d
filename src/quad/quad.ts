@@ -1,5 +1,5 @@
 import sleep from 'sleep-promise'
-import { Vector } from './vector'
+import { Vector, vec } from './vector'
 
 function map(value: number, inMin: number, inMax: number, outMin: number, outMax: number): number {
   return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
@@ -8,7 +8,7 @@ function map(value: number, inMin: number, inMax: number, outMin: number, outMax
 function mapVector(vector: Vector): Vector {
   const x = map(vector.x, -1, 1, 0, 600) % 600
   const y = map(vector.y, -0.5, 1.5, 600, 0) % 600
-  return new Vector(x < 0 ? x + 600 : x, y < 0 ? y + 600 : y)
+  return vec(x < 0 ? x + 600 : x, y < 0 ? y + 600 : y)
 }
 
 class Copter {

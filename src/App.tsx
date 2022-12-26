@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useLayoutEffect } from 'react'
 import './App.css'
-import { sim } from './quad'
+import { sim } from './quad/quad-pid'
 
 function App() {
   const ref = useRef()
