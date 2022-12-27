@@ -69,7 +69,7 @@ class Sim {
   fi = 0
   vx = 0
   pidy = new Pid(30, 20, 3, 0.1, 2)
-  pidfi = new Pid(1, 1, 0.5, -0.4, 0.4)
+  pidfi = new Pid(1, 1, 0.5, -0.5, 0.5)
   pidvx = new Pid(100, 0, 100.0, -0.1, 0.1)
 
   init(canvas: HTMLCanvasElement) {
@@ -146,8 +146,8 @@ class Sim {
       const r_fi = this.pidfi.regulate(this.fi, this.copter.fi, dt)
       // const r_fi = -this.pidvx.regulate(this.vx, this.copter.vx, dt)
       const r_fi_T = r_fi / 2 / this.copter.width / 2
-      this.copter.T1 = r + r_fi_T
-      this.copter.T2 = r - r_fi_T
+      this.copter.T1 = Math.max(r + r_fi_T, 0)
+      this.copter.T2 = Math.max(r - r_fi_T, 0)
       this.copter.upd(dt)
       if (this.copter.y <= 0) {
         this.copter.y = 0
