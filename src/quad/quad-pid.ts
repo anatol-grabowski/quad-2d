@@ -66,7 +66,9 @@ class Sim {
   t = 0
   copter = new Copter()
   y = 0
-  pidy = new Pid(30, 20, 3, 0.2, 4)
+  fi = 0
+  pidy = new Pid(30, 20, 3, 0.1, 2)
+  pidfi = new Pid(1, 1, 0.5, -0.4, 0.4)
 
   init(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!
@@ -74,6 +76,7 @@ class Sim {
 
     canvas.addEventListener('mousemove', (evt) => {
       this.y = map(evt.clientY, 600, 0, -0.5, 1.5)
+      this.fi = map(evt.clientX, 0, 600, 0.5, -0.5) // mouse right - negative angle
     })
 
     window.addEventListener('keydown', (ev) => {
@@ -137,15 +140,22 @@ class Sim {
       await sleep(dt * 1000)
       this.t += 1
       const r = this.pidy.regulate(this.y, this.copter.y, dt)
-      this.copter.T1 = r * 0.5
-      this.copter.T2 = r * 0.5
+      const r_fi = this.pidfi.regulate(this.fi, this.copter.fi, dt)
+      const r_fi_T = -r_fi / 2 / this.copter.width / 2 // why minus??
+      this.copter.T1 = r + r_fi_T
+      this.copter.T2 = r - r_fi_T
       this.copter.upd(dt)
       if (this.copter.y <= 0) {
         this.copter.y = 0
         this.copter.vy = 0
       }
       this.render()
-      this.ctx.fillText(`y ${this.copter.y}`, 10, 10)
+      this.ctx.fillText(`Y ${this.y}`, 10, 10)
+      this.ctx.fillText(`y ${this.copter.y}`, 10, 18)
+      this.ctx.fillText(`FI ${this.fi}`, 10, 30)
+      this.ctx.fillText(`fi ${this.copter.fi}`, 10, 38)
+      this.ctx.fillText(` ${r}`, 10, 50)
+      this.ctx.fillText(` ${r_fi_T}`, 10, 60)
     }
   }
 }
