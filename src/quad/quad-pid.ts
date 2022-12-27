@@ -29,13 +29,13 @@ class Copter {
   width = 0.2 // m
   I = (0.2 / 3) * 0.2 * 0.2 // kg*m^2
 
-  T1 = 0
-  T2 = 0
+  T1 = 0 // left
+  T2 = 0 // right
 
   upd(dt) {
     const { x, y, fi, vx, vy, w, ax, ay, E, m, width, I, T1, T2 } = this
 
-    const M = (-T1 * width) / 2 + (T2 * width) / 2
+    const M = (T1 * width) / 2 - (T2 * width) / 2
     const E_ = M / I
     const w_ = w + E_ * dt
     const fi_ = fi + w_ * dt
@@ -67,8 +67,10 @@ class Sim {
   copter = new Copter()
   y = 0
   fi = 0
+  vx = 0
   pidy = new Pid(30, 20, 3, 0.1, 2)
   pidfi = new Pid(1, 1, 0.5, -0.4, 0.4)
+  pidvx = new Pid(100, 0, 100.0, -0.1, 0.1)
 
   init(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!
@@ -77,6 +79,7 @@ class Sim {
     canvas.addEventListener('mousemove', (evt) => {
       this.y = map(evt.clientY, 600, 0, -0.5, 1.5)
       this.fi = map(evt.clientX, 0, 600, 0.5, -0.5) // mouse right - negative angle
+      this.vx = map(evt.clientX, 0, 600, -1, 1)
     })
 
     window.addEventListener('keydown', (ev) => {
@@ -141,7 +144,8 @@ class Sim {
       this.t += 1
       const r = this.pidy.regulate(this.y, this.copter.y, dt)
       const r_fi = this.pidfi.regulate(this.fi, this.copter.fi, dt)
-      const r_fi_T = -r_fi / 2 / this.copter.width / 2 // why minus??
+      // const r_fi = -this.pidvx.regulate(this.vx, this.copter.vx, dt)
+      const r_fi_T = r_fi / 2 / this.copter.width / 2
       this.copter.T1 = r + r_fi_T
       this.copter.T2 = r - r_fi_T
       this.copter.upd(dt)
